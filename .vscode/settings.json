@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "x509v3.h": "c",
+        "type_traits": "c"
+    }
+}

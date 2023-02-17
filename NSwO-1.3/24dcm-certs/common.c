@@ -77,18 +77,16 @@ long post_connection_check(SSL *ssl, char *host)
  
                 if (!(meth = X509V3_EXT_get(ext)))
                     break;
-                ASN1_OCTET_STRING *value = X509_EXTENSION_get_data(ext);
-                ASN1_STRING_get0_data(value);
-                //data = ext->value->data;
+                data = ext->value->data;
 
 #if (OPENSSL_VERSION_NUMBER > 0x00907000L)
                 if (meth->it)
-                  ext_str = ASN1_item_d2i(NULL, &data, ASN1_STRING_length(value),
+                  ext_str = ASN1_item_d2i(NULL, &data, ext->value->length,
                                           ASN1_ITEM_ptr(meth->it));
                 else
-                  ext_str = meth->d2i(NULL, &data, ASN1_STRING_length(value));
+                  ext_str = meth->d2i(NULL, &data, ext->value->length);
 #else
-                ext_str = meth->d2i(NULL, &data, ASN1_STRING_length(value));
+                ext_str = meth->d2i(NULL, &data, ext->value->length);
 #endif
                 val = meth->i2v(meth, ext_str, NULL);
                 for (j = 0;  j < sk_CONF_VALUE_num(val);  j++)

@@ -26,16 +26,15 @@ struct entry
 };
 
 struct entry entries[ENTRY_COUNT] = {
-  {"countryName", "US"},
-  {"stateOrProvinceName", "VA"},
-  {"localityName", "Fairfax"},
-  {"organizationName", "Zork.org"},
-  {"organizationalUnitName", "Server Division"},
-  {"commonName", "Server 36, Engineering"},
+  {"countryName", "VN"},
+  {"stateOrProvinceName", "Danang"},
+  {"localityName", "LGE"},
+  {"organizationName", "lge.com"},
+  {"organizationalUnitName", "DCV Division"},
+  {"commonName", "Cyber Security"},
 };
 
-int
-main (int argc, char *argv[])
+int main (int argc, char *argv[])
 {
   int i;
   X509_REQ *req;
@@ -46,7 +45,7 @@ main (int argc, char *argv[])
 
   OpenSSL_add_all_algorithms ();
   ERR_load_crypto_strings ();
-  seed_prng ();
+  //seed_prng ();
 
 /* first read in the private key */
   if (!(fp = fopen (PKEY_FILE, "r")))
@@ -88,7 +87,7 @@ main (int argc, char *argv[])
     X509_EXTENSION *ext;
     STACK_OF (X509_EXTENSION) * extlist;
     char *name = "subjectAltName";
-    char *value = "DNS:splat.zork.org";
+    char *value = "DNS:localhost:8080";
 
     extlist = sk_X509_EXTENSION_new_null ();
 
@@ -102,13 +101,9 @@ main (int argc, char *argv[])
     sk_X509_EXTENSION_pop_free (extlist, X509_EXTENSION_free);
   }
 
-/* pick the correct digest and sign the request */
-  if (EVP_PKEY_type (pkey->type) == EVP_PKEY_DSA)
-    digest = EVP_dss1 ();
-  else if (EVP_PKEY_type (pkey->type) == EVP_PKEY_RSA)
-    digest = EVP_sha1 ();
-  else
-    int_error ("Error checking public key for a valid digest");
+
+  digest = EVP_sha1 ();
+
   if (!(X509_REQ_sign (req, pkey, digest)))
     int_error ("Error signing request");
 
